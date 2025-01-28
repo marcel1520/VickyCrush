@@ -1,12 +1,49 @@
-
+import json
 import re #find_birth_year
 import random #random pick of famous people for the player
 
+def get_countries(path):
+    ''' Returns a list of all countries from world-countries.json'''
+    with open(path, 'r') as fileobj:
+        countries_data = json.load(fileobj)
+
+    countries = []
+    for feature in countries_data['features']:
+        name = feature['properties']['name']
+        countries.append(name)
+    return countries
+
+def get_us_states(path):
+    ''' Returns a list of all us-states from world-countries.json '''
+    with open(path, 'r') as fileobj:
+        data = json.load(fileobj)
+
+        us_states = []
+        for state in data:
+            us_states.append(state['name'])
+        return us_states
+
+def get_professions(path):
+    with open(path, 'r') as fileobj:
+        data = json.load(fileobj)
+
+        professions = []
+        for profession in list(data.values()):
+            professions.append(profession)
+    return professions[0]
+
+
 def get_random_person(data):
     """ Pick a person at random from a list of celebrities """
-    data = candidate_list_full
-    random_person = random.choice(data)
-    return random_person
+    while True:
+        data = candidate_list_full
+        random_person = random.choice(data)
+
+        name = random_person[0]
+        if len(name) < 2:
+            continue
+        else:
+            return random_person
 
 def find_birth_year(text):
     """ finds the birth year in the birth_info string in results. """
@@ -17,7 +54,7 @@ def find_birth_year(text):
     else:
         print('No integer found in wikipedia. Skipping that Question!!')
         return False
-        
+
 
 def get_answer_1(points, random_person):
     """ gets the answer for birth date from the user and compares with random_person
@@ -122,69 +159,10 @@ def get_answer_3(points, random_person, profession_keywords):
 
 def main():
 
-    us_states = [
-        "alabama", "alaska", "arizona", "arkansas", "california", "colorado",
-        "connecticut", "delaware", "florida", "georgia", "hawaii", "idaho",
-        "illinois", "indiana", "iowa", "kansas", "kentucky", "louisiana", "maine",
-        "maryland", "massachusetts", "michigan", "minnesota", "mississippi",
-        "missouri", "montana", "nebraska", "nevada", "new hampshire", "new jersey",
-        "new mexico", "new york", "north carolina", "north dakota", "ohio",
-        "oklahoma", "oregon", "pennsylvania", "rhode island", "south carolina",
-        "south dakota", "tennessee", "texas", "utah", "vermont", "virginia",
-        "washington", "west virginia", "wisconsin", "wyoming"
-    ]
-    countries = [
-        "united states", "usa", "us", "united kingdom", "uk", "china", "india", "germany", "france",
-        "japan", "russia", "italy", "canada", "australia", "brazil", "south korea",
-        "spain", "mexico", "south africa", "netherlands", "switzerland", "turkey",
-        "sweden", "saudi arabia", "argentina", "egypt", "indonesia", "norway",
-        "new zealand", "greece", "israel", "thailand", "ireland", "poland",
-        "portugal", "vietnam", "belgium", "denmark", "pakistan", "malaysia",
-        "philippines", "singapore", "austria", "czech republic", "chile",
-        "hungary", "finland", "colombia", "ukraine", "united arab emirates",
-        "iran", "bangladesh", "nigeria", "morocco", "peru", "venezuela", "ecuador",
-        "bolivia", "paraguay", "uruguay", "sri lanka", "nepal", "bhutan", "maldives",
-        "afghanistan", "mongolia", "kazakhstan", "uzbekistan", "turkmenistan",
-        "kyrgyzstan", "tajikistan", "myanmar", "laos", "cambodia", "brunei",
-        "east timor", "jamaica", "haiti", "cuba", "dominican republic", "trinidad and tobago",
-        "barbados", "bahamas", "fiji", "papua new guinea", "solomon islands",
-        "vanuatu", "samoa", "tonga", "kiribati", "micronesia", "marshall islands",
-        "palau", "seychelles", "mauritius", "madagascar", "angola", "zimbabwe",
-        "zambia", "botswana", "namibia", "mozambique", "malawi", "tanzania",
-        "uganda", "rwanda", "burundi", "congo", "democratic republic of the congo",
-        "ghana", "ivory coast", "senegal", "mali", "guinea", "benin", "togo",
-        "sierra leone", "liberia", "gambia", "cameroon", "chad", "niger",
-        "central african republic", "somalia", "eritrea", "djibouti", "sudan",
-        "south sudan", "ethiopia", "algeria", "tunisia", "libya", "cape verde",
-        "comoros", "lesotho", "eswatini", "equatorial guinea", "gabon",
-        "são tomé and príncipe", "armenia", "azerbaijan", "georgia", "albania",
-        "north macedonia", "kosovo", "bosnia and herzegovina", "montenegro",
-        "serbia", "croatia", "slovenia", "slovakia", "belarus", "latvia",
-        "lithuania", "estonia", "iceland", "luxembourg", "monaco", "san marino",
-        "andorra", "liechtenstein", "vatican city"
-    ]
-
-    profession_keywords = [
-        "scientist", "sports", "soccer", "football", "celebrities people", "nobel prize winners people",
-        "musicians", "actors", "actor", "president", "schauspielerin", "schauspieler",
-        "philosopher", "author", "poet", "director", "producer", "comedian", "model", "entrepreneur",
-        "inventor", "business magnate", "architect", "teacher", "journalist", "chef", "dancer", "photographer",
-        "author", "humanitarian", "activist", "royalty", "politician", "economist", "historian",
-        "psychologist", "lawyer", "doctor", "nurse", "engineer", "mathematician", "architect",
-        "filmmaker", "painter", "sculptor", "designer", "fashion designer", "billionaire",
-        "philanthropist", "environmentalist", "astronaut", "astronomer", "biologist", "geologist",
-        "ecologist", "mathematician", "cartographer", "scientific researcher", "cryptographer",
-        "linguist", "sociologist", "theologian", "neurologist", "oncologist", "orthopedic surgeon",
-        "choreographer", "voice actor", "veterinarian", "pilot", "fisherman", "taxidermist", "beekeeper",
-        "librarian", "social worker", "public relations specialist", "IT specialist", "web developer",
-        "data scientist", "cryptocurrency expert", "youtuber", "streamer", "vlogger", "blogger", "podcaster",
-        "fitness trainer", "lifeguard", "paralegal", "geographer", "pharmacist", "toxicologist",
-        "nutritionist", "dietitian", "emergency medical technician", "firefighter", "paramedic",
-        "police officer", "detective", "soldier", "military leader", "navy officer", "air force officer",
-        "judge", "mayor", "senator", "governor", "ambassador", "diplomat", "environmental scientist",
-        "climate scientist",
-    ]
-
+    # get all countries, us_states and professions:
+    countries = get_countries('world-countries.json')
+    us_states = get_us_states('us-states.json')
+    profession_keywords = get_professions('professions.json')
 
     #Game Start: Print Welcome Text, Rules, etc...
     # get_random_person():
@@ -192,9 +170,7 @@ def main():
 
     print(f"\nWelcome to VickyCrush! Your Random Person is: {random_person[0].upper()}")
 
-
     points = 0
-
     #Q1: Birth Date
     points = get_answer_1(points, random_person)
 
@@ -209,19 +185,6 @@ def main():
 if __name__ =="__main__":
     main()
 
-'''
-Scoring System:
-
-Q1: birth year
--> 20 points if correct
--> 10 points if in 50 year range
--> 5 points if in 100 year range
-
-Q2: birth location:
--> 10 points if correct country
--> 10 Bonus points for a city (only if city is found)
-
-Q3: profession
--> 10 points for each matching profession
-
-'''
+# switch language to english?
+# limited to 4-digit birth year
+# limited to the use of lists to find birth location.
